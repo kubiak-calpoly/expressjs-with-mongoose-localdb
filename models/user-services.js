@@ -1,5 +1,6 @@
-const mongoose = require("mongoose");
-const userModel = require("./user");
+import mongoose from "mongoose";
+import userModel from "./user";
+
 mongoose.set("debug", true);
 
 mongoose
@@ -9,46 +10,32 @@ mongoose
   })
   .catch((error) => console.log(error));
 
-async function getUsers(name, job) {
-  let result;
+export function getUsers(name, job) {
+  let promise;
   if (name === undefined && job === undefined) {
-    result = await userModel.find();
+    promise = userModel.find();
   } else if (name && !job) {
-    result = await findUserByName(name);
+    promise = findUserByName(name);
   } else if (job && !name) {
-    result = await findUserByJob(job);
+    promise = findUserByJob(job);
   }
-  return result;
+  return promise;
 }
 
-async function findUserById(id) {
-  try {
-    return await userModel.findById(id);
-  } catch (error) {
-    console.log(error);
-    return undefined;
-  }
+export function findUserById(id) {
+  return userModel.findById(id);
 }
 
-async function addUser(user) {
-  try {
-    const userToAdd = new userModel(user);
-    const savedUser = await userToAdd.save();
-    return savedUser;
-  } catch (error) {
-    console.log(error);
-    return false;
-  }
+export function addUser(user) {
+  const userToAdd = new userModel(user);
+  const promise = userToAdd.save();
+  return promise;
 }
 
-async function findUserByName(name) {
-  return await userModel.find({ name: name });
+function findUserByName(name) {
+  return userModel.find({ name: name });
 }
 
-async function findUserByJob(job) {
-  return await userModel.find({ job: job });
+function findUserByJob(job) {
+  return userModel.find({ job: job });
 }
-
-exports.getUsers = getUsers;
-exports.findUserById = findUserById;
-exports.addUser = addUser;
